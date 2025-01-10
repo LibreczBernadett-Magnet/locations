@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class Location {
-    private Long id;
+    private long id;
     private String name;
     private double lat;
     private double lon;
