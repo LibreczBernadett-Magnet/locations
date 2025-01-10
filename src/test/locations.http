@@ -1,0 +1,15 @@
+GET http://localhost:8080/locations
+Accept: application/json
+
+###
+
+#
+POST http://localhost:8080/locations
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Location - 5",
+  "lat": 5.0,
+  "lon": -5.0
+}
