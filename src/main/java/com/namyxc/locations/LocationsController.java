@@ -28,4 +28,14 @@ public class LocationsController {
     public LocationDto createLocation(@RequestBody CreateLocationCommand command){
         return locationsService.createLocation(command);
     }
+
+    @PutMapping("/locations/{id}")
+    public LocationDto updateLocation(@PathVariable("id") long id, @RequestBody UpdateLocationCommand command){
+        return locationsService.updateLocation(id,command);
+    }
+
+    @DeleteMapping("/locations/{id}")
+    public void deleteLocation(@PathVariable("id") long id){
+        locationsService.deleteLocation(id);
+    }
 }
