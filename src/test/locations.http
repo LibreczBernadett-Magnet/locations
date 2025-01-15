@@ -26,3 +26,17 @@ Accept: application/json
 }
 ###
 DELETE http://localhost:8080/locations/1
+###
+GET http://localhost:8080/locations/100
+Accept: application/json
+###
+PUT http://localhost:8080/locations/100
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Location - 100",
+  "lat": 5.0,
+  "lon": -5.0
+}
+

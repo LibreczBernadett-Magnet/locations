@@ -44,7 +44,7 @@ public class LocationsService {
 //        return modelMapper.map(locations.stream()
         return locationMapper.toDto(locations.stream()
                 .filter(l -> l.getId() ==  id).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("No location found with id: " + id)));
+                .orElseThrow(() -> new LocationNotFoundException("No location found with id: " + id)));
     }
 
     public LocationDto createLocation(CreateLocationCommand command) {
@@ -57,7 +57,7 @@ public class LocationsService {
     public LocationDto updateLocation(long id, UpdateLocationCommand command) {
         Location location = locations.stream()
                 .filter(l -> l.getId() == id)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("No location found with id: " + id));
+                .findFirst().orElseThrow(() -> new LocationNotFoundException("No location found with id: " + id));
         location.setName(command.getName());
         location.setLat(command.getLat());
         location.setLon(command.getLon());
