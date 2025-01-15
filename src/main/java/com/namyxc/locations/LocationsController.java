@@ -8,41 +8,30 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 public class LocationsController {
 
     private final LocationsService locationsService;
 
-    public LocationsController(LocationsService locationsService){
+    public LocationsController(LocationsService locationsService) {
         this.locationsService = locationsService;
     }
 
     @GetMapping("/locations")
-    public List<LocationDto> getLocations(@RequestParam Optional<String> name){
+    public List<LocationDto> getLocations(@RequestParam Optional<String> name) {
         return locationsService.getLocations(name);
     }
+
     @GetMapping("/locations/{id}")
-    public ResponseEntity<LocationDto> getLocation(@PathVariable("id") long id){
-        try {
-            LocationDto locationDto = locationsService.getLocation(id);
-            return ResponseEntity
-                    .ok()
-                    .header("Response-Id", UUID.randomUUID().toString())
-                    .body(locationDto);
-        }
-        catch (LocationNotFoundException e){
-            return ResponseEntity
-                    .notFound()
-                    .header("Response-Id", UUID.randomUUID().toString())
-                    .build();
-        }
+    public LocationDto getLocation(@PathVariable("id") long id) {
+        return locationsService.getLocation(id);
+
     }
 
     @PostMapping("/locations")
     public ResponseEntity<LocationDto> createLocation(@RequestBody CreateLocationCommand command,
-                                                      UriComponentsBuilder uri){
+                                                      UriComponentsBuilder uri) {
         LocationDto locationDto = locationsService.createLocation(command);
         return ResponseEntity
                 .created(uri.path("/locations/{id}").buildAndExpand(locationDto.getId()).toUri())
@@ -50,24 +39,18 @@ public class LocationsController {
     }
 
     @PutMapping("/locations/{id}")
-    public ResponseEntity<LocationDto> updateLocation(@PathVariable("id") long id, @RequestBody UpdateLocationCommand command){
-        try {
-            LocationDto locationDto = locationsService.updateLocation(id, command);
-            return ResponseEntity
-                    .ok()
-                    .header("Response-Id", UUID.randomUUID().toString())
-                    .body(locationDto);
-        }catch (LocationNotFoundException e){
-            return ResponseEntity
-                    .notFound()
-                    .header("Response-Id", UUID.randomUUID().toString())
-                    .build();
-        }
+    public LocationDto updateLocation(@PathVariable("id") long id, @RequestBody UpdateLocationCommand command) {
+        return locationsService.updateLocation(id, command);
     }
 
     @DeleteMapping("/locations/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteLocation(@PathVariable("id") long id){
+    public void deleteLocation(@PathVariable("id") long id) {
         locationsService.deleteLocation(id);
+    }
+
+    @ExceptionHandler(LocationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleLocationNotFoundException(LocationNotFoundException e) {
     }
 }
