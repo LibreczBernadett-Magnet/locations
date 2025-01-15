@@ -74,6 +74,11 @@ public class LocationsService {
         locations.remove(location);
     }
 
+    public void deleteAllLocation() {
+        counter.set(0);
+        locations.clear();
+    }
+
     private Supplier<LocationNotFoundException> notFoundExeption(long id) {
         return () -> new LocationNotFoundException("No location found with id: " + id);
     }
