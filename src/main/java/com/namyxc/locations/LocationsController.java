@@ -49,8 +49,4 @@ public class LocationsController {
         locationsService.deleteLocation(id);
     }
 
-    @ExceptionHandler(LocationNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handleLocationNotFoundException(LocationNotFoundException e) {
-    }
 }
