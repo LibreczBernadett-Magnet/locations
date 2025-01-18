@@ -3,6 +3,7 @@ package com.namyxc.locations;
 import com.namyxc.locations.dtos.Location;
 import com.namyxc.locations.dtos.LocationDto;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
 @Service
 @EnableConfigurationProperties(LocationProperties.class)
 @AllArgsConstructor
+@Slf4j
 public class LocationsService {
 //    private final ModelMapper modelMapper;
 
@@ -20,10 +22,6 @@ public class LocationsService {
     private final LocationMapper locationMapper;
 
     private final AtomicLong counter = new AtomicLong();
-
-//    public LocationsService(ModelMapper modelMapper) {
-//        this.modelMapper = modelMapper;
-//    }
 
     private final List<Location> locations = Collections.synchronizedList(new ArrayList<>(List.of(
             new Location(counter.getAndIncrement(),"Location - 0", 0,0),
@@ -57,6 +55,7 @@ public class LocationsService {
         Location location = new Location(counter.getAndIncrement(), name, command.getLat(), command.getLon());
         locations.add(location);
 //        return modelMapper.map(location, LocationDto.class);
+        log.info("Created new location: {}", location.getId());
         return locationMapper.toDto(location);
     }
 
@@ -73,6 +72,7 @@ public class LocationsService {
         location.setLon(command.getLon());
 
 //        return modelMapper.map(location, LocationDto.class);
+        log.info("Updated location: {}", location.getId());
         return locationMapper.toDto(location);
     }
 
@@ -81,6 +81,7 @@ public class LocationsService {
                 .filter(l -> l.getId() == id)
                 .findFirst().orElseThrow(notFoundExeption(id));
         locations.remove(location);
+        log.info("Deleted location: {}", location.getId());
     }
 
     public void deleteAllLocation() {
