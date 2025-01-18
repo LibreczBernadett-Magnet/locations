@@ -1,8 +1,6 @@
 package com.namyxc.locations;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,12 +16,10 @@ public class CreateLocationCommand {
     private String name;
 
     @Schema(description = "latitude of location", example = "40.730610")
-    @Min(-90)
-    @Max(90)
+    @Coordinate(type = CoordinateType.LAT)
     private double lat;
 
     @Schema(description = "longitude of location", example = "-73.935242")
-    @Min(-180)
-    @Max(180)
+    @Coordinate(type = CoordinateType.LON)
     private double lon;
 }

@@ -33,7 +33,7 @@ Accept: application/json
 
 {
   "name": "hello",
-  "lat": 500.0,
+  "lat": 91.0,
   "lon": 10
 }
 
