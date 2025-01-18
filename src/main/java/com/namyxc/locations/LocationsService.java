@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Service
@@ -16,35 +16,19 @@ import java.util.function.Supplier;
 @AllArgsConstructor
 @Slf4j
 public class LocationsService {
-//    private final ModelMapper modelMapper;
 
     private LocationProperties locationProperties;
     private final LocationMapper locationMapper;
-
-    private final AtomicLong counter = new AtomicLong();
-
-    private final List<Location> locations = Collections.synchronizedList(new ArrayList<>(List.of(
-            new Location(counter.getAndIncrement(),"Location - 0", 0,0),
-            new Location(counter.getAndIncrement(),"Location - 1", 1,-1),
-            new Location(counter.getAndIncrement(),"Location - 2", 2,-2),
-            new Location(counter.getAndIncrement(),"Location - 3", 3,-3),
-            new Location(counter.getAndIncrement(),"Location - 4", 4,-4)
-    )));
+    private final LocationsDao locationsDao;
 
     public List<LocationDto> getLocations(Optional<String> name){
-//        Type targetType = new TypeToken<List<LocationDto>>(){}.getType();
-        List<Location> filtered = locations.stream()
-                .filter(location -> name.isEmpty() || location.getName().toLowerCase().contains(name.get().toLowerCase()))
+        return locationsDao.findAll().stream()
+                .map(locationMapper::toDto)
                 .toList();
-//        return modelMapper.map(filtered, targetType);
-        return locationMapper.toDto(filtered);
     }
 
     public LocationDto getLocation(long id) {
-//        return modelMapper.map(locations.stream()
-        return locationMapper.toDto(locations.stream()
-                .filter(l -> l.getId() ==  id).findAny()
-                .orElseThrow(notFoundExeption(id)));
+        return locationMapper.toDto(locationsDao.getLocation(id));
     }
 
     public LocationDto createLocation(CreateLocationCommand command) {
@@ -52,11 +36,10 @@ public class LocationsService {
         if (locationProperties.isTouppercase()){
             name = name.toUpperCase();
         }
-        Location location = new Location(counter.getAndIncrement(), name, command.getLat(), command.getLon());
-        locations.add(location);
-//        return modelMapper.map(location, LocationDto.class);
+        Location location = new Location(name, command.getLat(), command.getLon());
+        Location created = locationsDao.createLocation(location);
         log.info("Created new location: {}", location.getId());
-        return locationMapper.toDto(location);
+        return locationMapper.toDto(created);
     }
 
     public LocationDto updateLocation(long id, UpdateLocationCommand command) {
@@ -64,29 +47,19 @@ public class LocationsService {
         if (locationProperties.isTouppercase()){
             name = name.toUpperCase();
         }
-        Location location = locations.stream()
-                .filter(l -> l.getId() == id)
-                .findFirst().orElseThrow(notFoundExeption(id));
-        location.setName(name);
-        location.setLat(command.getLat());
-        location.setLon(command.getLon());
-
-//        return modelMapper.map(location, LocationDto.class);
+        Location location = new Location(name, command.getLat(), command.getLon());
+        Location updated = locationsDao.updateLocation(id, location);
         log.info("Updated location: {}", location.getId());
-        return locationMapper.toDto(location);
+        return locationMapper.toDto(updated);
     }
 
     public void deleteLocation(long id) {
-        Location location = locations.stream()
-                .filter(l -> l.getId() == id)
-                .findFirst().orElseThrow(notFoundExeption(id));
-        locations.remove(location);
-        log.info("Deleted location: {}", location.getId());
+        locationsDao.delete(id);
+        log.info("Deleted location: {}", id);
     }
 
     public void deleteAllLocation() {
-        counter.set(0);
-        locations.clear();
+        locationsDao.deleteAll();
     }
 
     private Supplier<LocationNotFoundException> notFoundExeption(long id) {
