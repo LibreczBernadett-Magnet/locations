@@ -1,6 +1,7 @@
 package com.namyxc.locations;
 
 import com.namyxc.locations.dtos.LocationDto;
+import com.namyxc.locations.dtos.LocationsDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,8 +26,8 @@ class LocationsControllerTest {
     void getLocations() {
         List<LocationDto> mockedLocations = List.of(new LocationDto(0L, "mock", 0, 0));
         when(locationsService.getLocations(java.util.Optional.empty())).thenReturn(mockedLocations);
-        List<LocationDto> locations = locationsController.getLocations(java.util.Optional.empty());
+        LocationsDto locations = locationsController.getLocations(java.util.Optional.empty());
 
-        assertThat(locations).isEqualTo(mockedLocations.toString());
+        assertThat(locations.getLocations()).isEqualTo(mockedLocations);
     }
 }

@@ -2,8 +2,20 @@ GET http://localhost:8080/locations
 Accept: application/json
 
 ###
+GET http://localhost:8080/locations
+Accept: application/xml
 
-#
+####
+
+GET http://localhost:8080/locations/1
+Accept: application/json
+
+###
+GET http://localhost:8080/locations/1
+Accept: application/xml
+
+###
+
 POST http://localhost:8080/locations
 Content-Type: application/json
 Accept: application/json

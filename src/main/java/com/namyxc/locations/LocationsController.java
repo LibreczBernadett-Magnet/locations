@@ -1,12 +1,13 @@
 package com.namyxc.locations;
 
 import com.namyxc.locations.dtos.LocationDto;
+import com.namyxc.locations.dtos.LocationsDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -18,12 +19,12 @@ public class LocationsController {
         this.locationsService = locationsService;
     }
 
-    @GetMapping("/locations")
-    public List<LocationDto> getLocations(@RequestParam Optional<String> name) {
-        return locationsService.getLocations(name);
+    @GetMapping(value = "/locations", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public LocationsDto getLocations(@RequestParam Optional<String> name) {
+        return new LocationsDto(locationsService.getLocations(name));
     }
 
-    @GetMapping("/locations/{id}")
+    @GetMapping(value = "/locations/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public LocationDto getLocation(@PathVariable("id") long id) {
         return locationsService.getLocation(id);
 
