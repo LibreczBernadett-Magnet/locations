@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.with;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -44,5 +45,14 @@ public class LocationsControllerRestAssuredIT {
                 .delete("/locations/" + id)
                 .then()
                 .statusCode(204);
+    }
+
+    @Test
+    void validate() {
+        with()
+                .body(new CreateLocationCommand("Valid", 1, 1))
+                .post("/locations")
+                .then()
+                .body(matchesJsonSchemaInClasspath("location-dto.json"));
     }
 }
