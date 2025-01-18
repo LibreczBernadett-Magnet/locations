@@ -2,6 +2,8 @@ package com.namyxc.locations;
 
 import com.namyxc.locations.dtos.Location;
 import com.namyxc.locations.dtos.LocationDto;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -9,14 +11,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 @Service
+@EnableConfigurationProperties(LocationProperties.class)
+@AllArgsConstructor
 public class LocationsService {
 //    private final ModelMapper modelMapper;
 
+    private LocationProperties locationProperties;
     private final LocationMapper locationMapper;
-
-    public LocationsService(LocationMapper locationMapper) {
-        this.locationMapper = locationMapper;
-    }
 
     private final AtomicLong counter = new AtomicLong();
 
@@ -49,17 +50,25 @@ public class LocationsService {
     }
 
     public LocationDto createLocation(CreateLocationCommand command) {
-        Location location = new Location(counter.getAndIncrement(), command.getName(), command.getLat(), command.getLon());
+        String name = command.getName();
+        if (locationProperties.isTouppercase()){
+            name = name.toUpperCase();
+        }
+        Location location = new Location(counter.getAndIncrement(), name, command.getLat(), command.getLon());
         locations.add(location);
 //        return modelMapper.map(location, LocationDto.class);
         return locationMapper.toDto(location);
     }
 
     public LocationDto updateLocation(long id, UpdateLocationCommand command) {
+        String name = command.getName();
+        if (locationProperties.isTouppercase()){
+            name = name.toUpperCase();
+        }
         Location location = locations.stream()
                 .filter(l -> l.getId() == id)
                 .findFirst().orElseThrow(notFoundExeption(id));
-        location.setName(command.getName());
+        location.setName(name);
         location.setLat(command.getLat());
         location.setLon(command.getLon());
 

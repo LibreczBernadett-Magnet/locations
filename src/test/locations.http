@@ -21,7 +21,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "name": "Location - 5",
+  "name": "location - 5",
   "lat": 5.0,
   "lon": -5.0
 }
