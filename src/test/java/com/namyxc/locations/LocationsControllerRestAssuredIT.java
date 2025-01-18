@@ -55,4 +55,30 @@ public class LocationsControllerRestAssuredIT {
                 .then()
                 .body(matchesJsonSchemaInClasspath("location-dto.json"));
     }
+
+    @Test
+    void validateCreateLocation() {
+        with()
+        .body(new CreateLocationCommand("", 1, 1))
+                .post("/locations")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    void validateUpdateLocation() {
+        Integer id = with()
+                .body(new CreateLocationCommand("Update", 1, 1))
+                .post("/locations")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Update"))
+                .extract().path("id");
+
+        with()
+                .body(new CreateLocationCommand("Update2", 1000, 1))
+                .put("/locations/" + id)
+                .then()
+                .statusCode(400);
+    }
 }

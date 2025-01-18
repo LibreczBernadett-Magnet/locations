@@ -25,6 +25,17 @@ Accept: application/json
   "lat": 5.0,
   "lon": -5.0
 }
+### validáció
+
+POST http://localhost:8080/locations
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "hello",
+  "lat": 500.0,
+  "lon": 10
+}
 
 ###
 PUT http://localhost:8080/locations/1

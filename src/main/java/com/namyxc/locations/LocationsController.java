@@ -2,6 +2,7 @@ package com.namyxc.locations;
 
 import com.namyxc.locations.dtos.LocationDto;
 import com.namyxc.locations.dtos.LocationsDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class LocationsController {
     }
 
     @PostMapping("/locations")
-    public ResponseEntity<LocationDto> createLocation(@RequestBody CreateLocationCommand command,
+    public ResponseEntity<LocationDto> createLocation(@Valid @RequestBody CreateLocationCommand command,
                                                       UriComponentsBuilder uri) {
         LocationDto locationDto = locationsService.createLocation(command);
         return ResponseEntity
@@ -40,7 +41,7 @@ public class LocationsController {
     }
 
     @PutMapping("/locations/{id}")
-    public LocationDto updateLocation(@PathVariable("id") long id, @RequestBody UpdateLocationCommand command) {
+    public LocationDto updateLocation(@PathVariable("id") long id, @Valid @RequestBody UpdateLocationCommand command) {
         return locationsService.updateLocation(id, command);
     }
 
