@@ -8,6 +8,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -17,26 +19,22 @@ public class LocationsDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private static Location mapRow(ResultSet rs, int rowNum) throws SQLException {
+        long id = rs.getLong("id");
+        String name = rs.getString("name");
+        double lat = rs.getDouble("lat");
+        double lon = rs.getDouble("lon");
+        return new Location(id, name, lat, lon);
+    }
+
     public List<Location> findAll() {
         return jdbcTemplate.query("select id, name, lat, lon from locations",
-                (rs, rowNum) -> {
-            Long id = rs.getLong("id");
-            String name = rs.getString("name");
-            Double lat = rs.getDouble("lat");
-            Double lon = rs.getDouble("lon");
-                    return new Location(id, name, lat, lon);
-        });
+                LocationsDao::mapRow);
     }
 
     public Location getLocation(long id) {
         return jdbcTemplate.queryForObject("select id, name, lat, lon from locations where id = ?",
-                (rs, rowNum) -> {
-                    Long loc_id = rs.getLong("id");
-                    String name = rs.getString("name");
-                    Double lat = rs.getDouble("lat");
-                    Double lon = rs.getDouble("lon");
-                    return new Location(loc_id, name, lat, lon);
-                },
+                LocationsDao::mapRow,
                 id);
     }
 
