@@ -41,7 +41,8 @@ public class LocationsService {
         Location location = new Location(name, command.getLat(), command.getLon());
         Location created = repository.save(location);
         log.info("Created new location: {}", location.getId());
-        eventstoreGateway.sendEvent(new CreateEventCommand("Created new location: " + location.getId()));
+        //eventstoreGateway.sendEvent(new CreateEventCommand("Created new location: " + location.getId()));
+        eventstoreGateway.sendMessage(location.getId());
         return locationMapper.toDto(created);
     }
 
@@ -57,7 +58,8 @@ public class LocationsService {
         location.setLon(command.getLon());
         Location updated = repository.save(location);
         log.info("Updated location: {}", location.getId());
-        eventstoreGateway.sendEvent(new CreateEventCommand("Updated location: " + location.getId()));
+        //eventstoreGateway.sendEvent(new CreateEventCommand("Updated location: " + location.getId()));
+        eventstoreGateway.sendMessage(location.getId());
         return locationMapper.toDto(updated);
     }
 
