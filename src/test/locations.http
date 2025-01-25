@@ -63,3 +63,42 @@ Accept: application/json
   "lon": -5.0
 }
 
+
+### actuator
+GET http://localhost:8080/actuator
+
+
+### info
+GET http://localhost:8080/actuator/info
+
+
+### httpexchanges
+GET http://localhost:8080/actuator/httpexchanges
+
+
+### loggers
+GET http://localhost:8080/actuator/loggers
+
+
+### loggers/locations
+GET http://localhost:8080/actuator/loggers/com.namyxc.locations
+
+
+### loggers/employees
+POST http://localhost:8080/actuator/loggers/com.namyxc.locations
+Content-Type: application/json
+
+{
+  "configuredLevel": "debug"
+}
+
+
+### metrics
+GET http://localhost:8080/actuator/metrics
+
+### metrics/employees.created
+GET http://localhost:8080/actuator/metrics/locations.created
+
+
+### auditevents
+GET http://localhost:8080/actuator/auditevents

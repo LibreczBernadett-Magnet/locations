@@ -2,13 +2,19 @@ package com.namyxc.locations;
 
 import com.namyxc.locations.dtos.Location;
 import com.namyxc.locations.dtos.LocationDto;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -17,11 +23,22 @@ import java.util.function.Supplier;
 @AllArgsConstructor
 @Slf4j
 public class LocationsService {
+    public static final String LOCATIONS_CREATED_COUNTER = "locations.created";
 
     private LocationProperties locationProperties;
     private final LocationMapper locationMapper;
     private final LocationsRepository repository;
     private final EventstoreGateway eventstoreGateway;
+    private final MeterRegistry meterRegistry;
+    private final ApplicationEventPublisher eventPublisher;
+
+    @PostConstruct
+    public void init() {
+        Counter.builder(LOCATIONS_CREATED_COUNTER)
+                .baseUnit("locations")
+                .description("Number of locations created")
+                .register(meterRegistry);
+    }
 
     public List<LocationDto> getLocations(Optional<String> name){
         return repository.findAll().stream()
@@ -43,6 +60,7 @@ public class LocationsService {
         log.info("Created new location: {}", location.getId());
         //eventstoreGateway.sendEvent(new CreateEventCommand("Created new location: " + location.getId()));
         eventstoreGateway.sendMessage(location.getId());
+        meterRegistry.counter(LOCATIONS_CREATED_COUNTER).increment();
         return locationMapper.toDto(created);
     }
 
@@ -60,6 +78,8 @@ public class LocationsService {
         log.info("Updated location: {}", location.getId());
         //eventstoreGateway.sendEvent(new CreateEventCommand("Updated location: " + location.getId()));
         eventstoreGateway.sendMessage(location.getId());
+        eventPublisher.publishEvent(new AuditApplicationEvent("anyonymus", "location_updated",
+                Map.of("name", command.getName())));
         return locationMapper.toDto(updated);
     }
 
